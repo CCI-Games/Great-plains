@@ -22,6 +22,10 @@ config/icon="res://icon.png"
 
 gdscript/warnings/return_value_discarded=false
 
+[gdnative]
+
+singletons=[ "res://pythonscript.gdnlib" ]
+
 [input]
 
 move_forward={
