@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Object",
+"class": "ClamberManager",
+"language": "GDScript",
+"path": "res://addons/thief_controller/scripts/player/clamber_manager.gd"
+}, {
 "base": "ResourceFormatLoader",
 "class": "HTerrainDataLoader",
 "language": "GDScript",
@@ -18,16 +23,53 @@ _global_script_classes=[ {
 "class": "HTerrainDataSaver",
 "language": "GDScript",
 "path": "res://addons/zylann.hterrain/hterrain_resource_saver.gd"
+}, {
+"base": "Spatial",
+"class": "LightDetector",
+"language": "GDScript",
+"path": "res://addons/thief_controller/scripts/player/light_detector.gd"
+}, {
+"base": "KinematicBody",
+"class": "Player",
+"language": "GDScript",
+"path": "res://addons/thief_controller/scripts/player/player.gd"
+}, {
+"base": "AudioStreamPlayer",
+"class": "PlayerAudio",
+"language": "GDScript",
+"path": "res://addons/thief_controller/scripts/player/player_audio.gd"
+}, {
+"base": "Area",
+"class": "PlayerSoundEmitter",
+"language": "GDScript",
+"path": "res://addons/thief_controller/scripts/player/player_sound_emitter.gd"
+}, {
+"base": "Camera",
+"class": "ShakeCamera",
+"language": "GDScript",
+"path": "res://addons/thief_controller/scripts/player/player_camera.gd"
+}, {
+"base": "Spatial",
+"class": "SimplePCGTerrain",
+"language": "GDScript",
+"path": "res://addons/godot-simple-procedural-terrain-main/SimplePCGTerrain.gd"
 } ]
 _global_script_class_icons={
+"ClamberManager": "",
 "HTerrainDataLoader": "",
-"HTerrainDataSaver": ""
+"HTerrainDataSaver": "",
+"LightDetector": "",
+"Player": "",
+"PlayerAudio": "",
+"PlayerSoundEmitter": "",
+"ShakeCamera": "",
+"SimplePCGTerrain": ""
 }
 
 [application]
 
 config/name="First Person Template"
-run/main_scene="res://JoinScreen/JoinScreen.tscn"
+run/main_scene="res://addons/Spatial.tscn"
 config/icon="res://icon.png"
 
 [debug]
