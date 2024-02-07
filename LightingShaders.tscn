@@ -1,0 +1,262 @@
+[gd_scene load_steps=13 format=2]
+
+[ext_resource path="res://models/monkey.mesh" type="ArrayMesh" id=1]
+[ext_resource path="res://shaders/ModifiedBurleyBRDF.shader" type="Shader" id=2]
+
+[sub_resource type="SpatialMaterial" id=1]
+albedo_color = Color( 1, 0.678431, 0.227451, 1 )
+metallic = 0.42
+metallic_specular = 0.34
+roughness = 0.24
+
+[sub_resource type="Shader" id=3]
+code = "shader_type spatial;
+
+uniform vec4 albedo : hint_color;
+uniform float specularity : hint_range(0.0, 1.0);
+void fragment(){
+	ALBEDO = albedo.xyz;
+}
+
+vec3 mon2lin(vec3 color){
+	return vec3(pow(color.x, 2.2),pow(color.y, 2.2),pow(color.z, 2.2));
+}
+
+void light(){
+	float PI = 3.14159265358979323846;
+	vec3 H = normalize(LIGHT+VIEW);
+	float NdotH = dot(NORMAL, H) * 0.5 + 0.5;
+	float NdotL = dot(NORMAL, LIGHT) * 0.5 + 0.5;
+	float spec = pow(NdotH, 256.0 * max(0.0001, specularity));
+	float theta = smoothstep(0., 1., NdotL);
+	vec3 diffuse_component = mon2lin((LIGHT_COLOR * ALBEDO/PI) * theta);
+	diffuse_component *= ATTENUATION;
+	vec3 specular_component = mon2lin(mix(ALBEDO, LIGHT_COLOR, specularity) * spec * theta);
+	specular_component *= ATTENUATION;
+	DIFFUSE_LIGHT = diffuse_component + specular_component;
+}"
+
+[sub_resource type="ShaderMaterial" id=4]
+shader = SubResource( 3 )
+shader_param/albedo = Color( 0.133333, 0.913725, 0.768627, 1 )
+shader_param/specularity = 0.91
+
+[sub_resource type="Shader" id=6]
+code = "shader_type spatial;
+
+uniform vec4 albedo : hint_color;
+uniform float specularity : hint_range(0.0, 1.0);
+uniform float roughness : hint_range(0.0, 1.0);
+
+void fragment(){
+	ALBEDO = albedo.xyz;
+}
+
+vec3 mon2lin(vec3 color){
+	return vec3(pow(color.x, 2.25),pow(color.y, 2.25),pow(color.z, 2.25));
+}
+
+void light(){
+	float PI = 3.14159265358979323846;
+	vec3 H = normalize(LIGHT+VIEW);
+	float NdotH = dot(NORMAL, H) * 0.5 + 0.5;
+	float LdotH = dot(LIGHT, H) * 0.5 + 0.5;
+	float NdotL = dot(NORMAL, LIGHT) * 0.5 + 0.5;
+	float NdotV = dot(NORMAL, VIEW) * 0.5 + 0.5;
+	float spec = pow(NdotH, 256.0 * max(0.0001, specularity));
+	float theta = smoothstep(0., 1., NdotL);
+	
+	float stepsize = LdotH + NdotL * NdotV;
+	float percent = mix(1.0, max(NdotL, NdotV), step(0.0, stepsize));
+	
+	float a2 = roughness * roughness;
+	float multiplier = a2 / (a2+0.09);
+	float A = 1.0 - 0.5 * multiplier;
+	float B = 0.45 * multiplier;
+	vec3 diffuse_component = mon2lin(ALBEDO * LIGHT_COLOR * theta * (A+B * stepsize/percent) / PI);
+	diffuse_component *= ATTENUATION;
+	vec3 specular_component = mon2lin(mix(ALBEDO, LIGHT_COLOR, specularity*(1.0-roughness)) * spec * theta * (1.0-a2));
+	specular_component *= ATTENUATION;
+	DIFFUSE_LIGHT = diffuse_component + specular_component;
+}"
+
+[sub_resource type="ShaderMaterial" id=7]
+shader = SubResource( 6 )
+shader_param/albedo = Color( 1, 0, 0, 1 )
+shader_param/specularity = 0.49
+shader_param/roughness = 0.0
+
+[sub_resource type="ShaderMaterial" id=10]
+shader = ExtResource( 2 )
+shader_param/albedo = Color( 1, 0.819608, 0, 1 )
+shader_param/albedo_uv_scale = Vector2( 1, 1 )
+shader_param/normal_depth = 1.0
+shader_param/specularity = 0.063
+shader_param/specular_tint = 1.0
+shader_param/roughness = 1.0
+shader_param/sheen = 1.0
+shader_param/sheen_tint = 1.0
+shader_param/metallic = 1.0
+shader_param/subsurface = 1.0
+
+[sub_resource type="ShaderMaterial" id=13]
+shader = ExtResource( 2 )
+shader_param/albedo = Color( 1, 0, 0, 1 )
+shader_param/albedo_uv_scale = Vector2( 1, 1 )
+shader_param/normal_depth = 1.0
+shader_param/specularity = 0.222
+shader_param/specular_tint = 0.5
+shader_param/roughness = 0.5
+shader_param/sheen = 0.5
+shader_param/sheen_tint = 0.5
+shader_param/metallic = 0.5
+shader_param/subsurface = 0.0
+
+[sub_resource type="ShaderMaterial" id=15]
+shader = ExtResource( 2 )
+shader_param/albedo = Color( 0.941176, 0.717647, 0.592157, 1 )
+shader_param/albedo_uv_scale = Vector2( 1, 1 )
+shader_param/normal_depth = 1.0
+shader_param/specularity = 0.05
+shader_param/specular_tint = 0.85
+shader_param/roughness = 0.5
+shader_param/sheen = 0.85
+shader_param/sheen_tint = 0.9
+shader_param/metallic = 0.1
+shader_param/subsurface = 0.95
+
+[sub_resource type="ShaderMaterial" id=16]
+shader = ExtResource( 2 )
+shader_param/albedo = Color( 0.0470588, 0.945098, 0.819608, 1 )
+shader_param/albedo_uv_scale = Vector2( 1, 1 )
+shader_param/normal_depth = 1.0
+shader_param/specularity = 1.0
+shader_param/specular_tint = 0.0
+shader_param/roughness = 1.0
+shader_param/sheen = 1.0
+shader_param/sheen_tint = 0.0
+shader_param/metallic = 0.094
+shader_param/subsurface = 1.0
+
+[sub_resource type="Environment" id=12]
+background_mode = 1
+background_color = Color( 0.384314, 0.384314, 0.384314, 1 )
+background_energy = 0.0
+ambient_light_color = Color( 0.431373, 0.431373, 0.431373, 1 )
+ambient_light_energy = 0.25
+
+[node name="Spatial" type="Spatial"]
+
+[node name="Default Shader" type="MeshInstance" parent="."]
+editor/display_folded = true
+material_override = SubResource( 1 )
+mesh = ExtResource( 1 )
+material/0 = null
+
+[node name="OmniLight" type="OmniLight" parent="Default Shader"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2 )
+omni_range = 3.0
+
+[node name="OmniLight2" type="OmniLight" parent="Default Shader"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+omni_range = 2.0
+omni_attenuation = 2.0
+
+[node name="Blinn Phong Shader" type="MeshInstance" parent="."]
+editor/display_folded = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 0 )
+material_override = SubResource( 4 )
+mesh = ExtResource( 1 )
+material/0 = null
+
+[node name="OmniLight" type="OmniLight" parent="Blinn Phong Shader"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2 )
+omni_range = 3.0
+
+[node name="OmniLight2" type="OmniLight" parent="Blinn Phong Shader"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+omni_range = 2.0
+omni_attenuation = 2.0
+
+[node name="Oren Nayar Shader" type="MeshInstance" parent="."]
+editor/display_folded = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0 )
+material_override = SubResource( 7 )
+mesh = ExtResource( 1 )
+material/0 = null
+
+[node name="OmniLight" type="OmniLight" parent="Oren Nayar Shader"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2 )
+omni_range = 3.0
+
+[node name="OmniLight2" type="OmniLight" parent="Oren Nayar Shader"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+omni_range = 2.0
+omni_attenuation = 2.0
+
+[node name="Burley" type="MeshInstance" parent="."]
+editor/display_folded = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 0 )
+material_override = SubResource( 10 )
+mesh = ExtResource( 1 )
+material/0 = null
+
+[node name="OmniLight" type="OmniLight" parent="Burley"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2 )
+omni_range = 3.0
+
+[node name="OmniLight2" type="OmniLight" parent="Burley"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+omni_range = 2.0
+omni_attenuation = 2.0
+
+[node name="Burley2" type="MeshInstance" parent="."]
+editor/display_folded = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 6.30321 )
+material_override = SubResource( 13 )
+mesh = ExtResource( 1 )
+material/0 = null
+
+[node name="OmniLight" type="OmniLight" parent="Burley2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2 )
+omni_range = 3.0
+
+[node name="OmniLight2" type="OmniLight" parent="Burley2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+omni_range = 2.0
+omni_attenuation = 2.0
+
+[node name="Burley3" type="MeshInstance" parent="."]
+editor/display_folded = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 12.0623 )
+material_override = SubResource( 15 )
+mesh = ExtResource( 1 )
+material/0 = null
+
+[node name="OmniLight" type="OmniLight" parent="Burley3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2 )
+omni_range = 3.0
+
+[node name="OmniLight2" type="OmniLight" parent="Burley3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+omni_range = 2.0
+omni_attenuation = 2.0
+
+[node name="Burley4" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 18, 0, 17.8587 )
+material_override = SubResource( 16 )
+mesh = ExtResource( 1 )
+material/0 = null
+
+[node name="OmniLight" type="OmniLight" parent="Burley4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2 )
+light_color = Color( 0.72549, 0.427451, 0.427451, 1 )
+omni_range = 3.0
+
+[node name="OmniLight2" type="OmniLight" parent="Burley4"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0 )
+omni_range = 2.0
+omni_attenuation = 2.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 12 )

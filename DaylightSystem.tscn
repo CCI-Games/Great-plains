@@ -1,0 +1,121 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://TerrainHeightmapGen2.tscn" type="PackedScene" id=1]
+[ext_resource path="res://shaders/WaterShader.shader" type="Shader" id=2]
+[ext_resource path="res://textures/water_normal.jpg" type="Texture" id=3]
+[ext_resource path="res://Sunlight.gd" type="Script" id=4]
+[ext_resource path="res://shaders/CloudShader.shader" type="Shader" id=5]
+[ext_resource path="res://textures/blue_noise.png" type="Texture" id=6]
+[ext_resource path="res://textures/perlin_noise.jpg" type="Texture" id=7]
+[ext_resource path="res://textures/worley_noise.jpg" type="Texture" id=8]
+
+[sub_resource type="ShaderMaterial" id=1]
+render_priority = -10
+shader = ExtResource( 2 )
+shader_param/foam_color = Color( 1, 1, 1, 1 )
+shader_param/specular_color = Color( 1, 1, 1, 0.266667 )
+shader_param/surface_water = Color( 0.180392, 0.458824, 0.45098, 0.682353 )
+shader_param/deep_water = Color( 0.0352941, 0.172549, 0.215686, 0.94902 )
+shader_param/uv_scale = Vector2( 12, 4 )
+shader_param/time_factor = 0.025
+shader_param/visible_depth = 8.0
+shader_param/foam_range = 2.0
+shader_param/wave_amp = 1.0
+shader_param/water_normal = ExtResource( 3 )
+
+[sub_resource type="PlaneMesh" id=2]
+size = Vector2( 64, 64 )
+subdivide_width = 8
+subdivide_depth = 8
+
+[sub_resource type="ProceduralSky" id=3]
+
+[sub_resource type="Environment" id=4]
+background_mode = 1
+background_sky = SubResource( 3 )
+background_color = Color( 0.0420414, 0.125565, 0.29619, 1 )
+background_energy = 11.82
+ambient_light_color = Color( 0.0420414, 0.125565, 0.29619, 1 )
+fog_color = Color( 0.368627, 0.456703, 0.500074, 1 )
+fog_depth_begin = 0.0
+fog_depth_end = 196.0
+fog_depth_curve = 1.23115
+fog_transmit_enabled = true
+fog_transmit_curve = 1.18921
+fog_height_max = 85.0
+fog_height_curve = 1.1487
+
+[sub_resource type="ShaderMaterial" id=5]
+render_priority = 1
+shader = ExtResource( 5 )
+shader_param/amp = 12.0
+shader_param/cast_shadow = true
+shader_param/cloud_shift = 0.001
+shader_param/global_transparency = 1.95
+shader_param/worley = ExtResource( 8 )
+shader_param/perlin = ExtResource( 7 )
+shader_param/blue = ExtResource( 6 )
+
+[sub_resource type="SphereMesh" id=6]
+radial_segments = 8
+rings = 4
+
+[node name="Daylight System" type="Spatial"]
+transform = Transform( 5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0 )
+
+[node name="TerrainHeightmapGen" parent="." instance=ExtResource( 1 )]
+view_distance = 64
+height = 12
+height_bias = 1.65
+seed_val = 45
+period = 20.0
+
+[node name="Water" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0 )
+material_override = SubResource( 1 )
+mesh = SubResource( 2 )
+material/0 = null
+
+[node name="Sun" type="DirectionalLight" parent="."]
+transform = Transform( 1, 0, 0, 0, -0.354835, -0.932909, 0, 0.932909, -0.354835, 0, 5, 0 )
+light_color = Color( 0.0742531, 0.0297958, 0.078244, 1 )
+light_energy = 2.0
+light_indirect_energy = 0.0
+shadow_enabled = true
+shadow_reverse_cull_face = true
+directional_shadow_blend_splits = true
+directional_shadow_depth_range = 1
+directional_shadow_max_distance = 2000.0
+script = ExtResource( 4 )
+day_cycle = 10
+night = Color( 0.0235294, 0.00392157, 0.0627451, 1 )
+sky_color = Color( 0.0156863, 0.203922, 0.47451, 1 )
+
+[node name="Sky" type="WorldEnvironment" parent="Sun"]
+environment = SubResource( 4 )
+
+[node name="CPUParticles" type="CPUParticles" parent="."]
+transform = Transform( 4, 0, 0, 0, 1, 0, 0, 0, 4, 0, 15.3896, 0 )
+material_override = SubResource( 5 )
+cast_shadow = 0
+amount = 32
+lifetime = 50.0
+preprocess = 34.0
+speed_scale = 0.26
+randomness = 1.0
+fixed_fps = 60
+mesh = SubResource( 6 )
+emission_shape = 3
+emission_points = PoolVector3Array( 0, 0, 0, 0, 0, 10, 10, 0, 0, 10, 0, 10, -10, 0, 0, 0, 0, -10 )
+flag_align_y = true
+flag_rotate_y = true
+spread = 180.0
+flatness = 1.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 0.2
+initial_velocity_random = 1.0
+angular_velocity = 0.01
+angular_velocity_random = 1.0
+linear_accel_random = 0.19
+scale_amount = 0.01
+scale_amount_random = 1.0

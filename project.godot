@@ -48,11 +48,6 @@ _global_script_classes=[ {
 "class": "ShakeCamera",
 "language": "GDScript",
 "path": "res://addons/thief_controller/scripts/player/player_camera.gd"
-}, {
-"base": "Spatial",
-"class": "SimplePCGTerrain",
-"language": "GDScript",
-"path": "res://addons/godot-simple-procedural-terrain-main/SimplePCGTerrain.gd"
 } ]
 _global_script_class_icons={
 "ClamberManager": "",
@@ -62,8 +57,7 @@ _global_script_class_icons={
 "Player": "",
 "PlayerAudio": "",
 "PlayerSoundEmitter": "",
-"ShakeCamera": "",
-"SimplePCGTerrain": ""
+"ShakeCamera": ""
 }
 
 [application]
