@@ -10,10 +10,11 @@ onready var _cam_bottom = $Viewport2/CameraBottom
 export var light_detect_interval : float = 0.25
 var _last_time_since_detect : float = 0.0
 
-var _player : Player = null
+var _player : KinematicBody = null
+
 
 func _ready() -> void:
-	_player = get_parent()
+	_player = get_parent().get_node("Player")
 
 
 func _get_time() -> float:
@@ -51,7 +52,7 @@ func get_light_level(top : bool = true) -> float:
 	img.lock()
 	
 	var p0 = img.get_pixel(0, 0)
-	var hl = 0.2126 * p0.r + 0.7152 * p0.g + 0.0722 * p0.b				
+	var hl = 0.2126 * p0.r + 0.7152 * p0.g + 0.0722 * p0.b                
 	
 	for y in img.get_height():
 		for x in img.get_width():

@@ -29,11 +29,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/thief_controller/scripts/player/light_detector.gd"
 }, {
-"base": "KinematicBody",
-"class": "Player",
-"language": "GDScript",
-"path": "res://addons/thief_controller/scripts/player/player.gd"
-}, {
 "base": "AudioStreamPlayer",
 "class": "PlayerAudio",
 "language": "GDScript",
@@ -54,7 +49,6 @@ _global_script_class_icons={
 "HTerrainDataLoader": "",
 "HTerrainDataSaver": "",
 "LightDetector": "",
-"Player": "",
 "PlayerAudio": "",
 "PlayerSoundEmitter": "",
 "ShakeCamera": ""
