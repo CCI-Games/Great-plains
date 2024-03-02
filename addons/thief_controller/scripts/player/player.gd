@@ -1,15 +1,16 @@
 extends KinematicBody
 
-
 var collision_shape: CollisionShape
-
-func _ready():
-	collision_shape = $CollisionShape
-
-var speed: float = 10.0 # Assign a value to the speed variable
+var speed: float = 10.0
 var gravity: float = 9.8
 var jump_force: float = 10.0
 
+func _ready():
+	# Find the CollisionShape node relative to the player node
+	if $CollisionShape:
+		collision_shape = $CollisionShape
+	else:
+		print("CollisionShape node not found!")
 
 func _physics_process(delta):
 	var motion = Vector3()
@@ -33,6 +34,8 @@ func _physics_process(delta):
 		motion.y = jump_force
 
 	if Input.is_action_just_pressed("crouch"):
-		collision_shape.scale.y = 0.5
+		if collision_shape:
+			collision_shape.scale.y = 0.5
 	elif Input.is_action_just_released("crouch"):
-		collision_shape.scale.y = 1.0
+		if collision_shape:
+			collision_shape.scale.y = 1.0

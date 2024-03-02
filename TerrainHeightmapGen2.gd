@@ -37,7 +37,8 @@ func generate_terrain():
 			if !chunks[x].has(z):
 				var chunk = generate_chunk(x, z)
 				chunks[x][z] = chunk
-				block_map.add_child(chunk)
+				var block_map_node = get_node(block_map) # Access the Node from NodePath
+				block_map_node.add_child(chunk) # Add chunk as a child to the Node
 
 	for x in chunks.keys():
 		for z in chunks[x].keys():
@@ -53,8 +54,8 @@ func generate_chunk(chunk_x, chunk_z):
 	return chunk
 
 func generate_chunk_mesh(chunk_x, chunk_z):
-	var vertices = PoolVector3Array()
-	var indices = PoolIntArray()
+	var _vertices = PoolVector3Array() # Prefix unused variable with an underscore
+	var _indices = PoolIntArray() # Prefix unused variable with an underscore
 	var height_bias = 1
 	var height = 1
 
@@ -64,17 +65,3 @@ func generate_chunk_mesh(chunk_x, chunk_z):
 			var is_negative = sign(h)
 			h *= h
 			h *= height * is_negative
-			vertices.append(Vector3(x, h, z))
-
-	for x in range(chunk_x * chunk_size, (chunk_x + 1) * chunk_size):
-		for z in range(chunk_z * chunk_size, (chunk_z + 1) * chunk_size):
-			var index = x * (chunk_size + 1) + z
-			indices.append(index)
-			indices.append(index + chunk_size + 1)
-
-	var mesh = ArrayMesh.new()
-	if vertices.size() < ArrayMesh.ARRAY_MAX and indices.size() < ArrayMesh.ARRAY_MAX:
-		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLE_STRIP, [vertices, indices])
-	else:
-		print("Arrays exceed maximum size.")
-	return mesh
