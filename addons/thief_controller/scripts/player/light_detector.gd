@@ -12,14 +12,13 @@ var _last_time_since_detect : float = 0.0
 
 var _player : KinematicBody = null
 
-
 func _ready() -> void:
-	_player = get_parent().get_node("Player")
-
+	_player = get_node("/root/Spatial/Player") as KinematicBody
+	if _player == null:
+		print("Player node not found. Please check the node path.")
 
 func _get_time() -> float:
 	return OS.get_ticks_msec() / 1000.0
-
 
 func _process(_delta) -> void:
 	var new_pos = _player.global_transform.origin + Vector3.UP * 0.5
@@ -39,7 +38,6 @@ func _process(_delta) -> void:
 	_player.light_level = level
 	_last_time_since_detect = _get_time()
 
-
 func get_light_level(top : bool = true) -> float:
 	var img = null
 	if top:
@@ -54,8 +52,8 @@ func get_light_level(top : bool = true) -> float:
 	var p0 = img.get_pixel(0, 0)
 	var hl = 0.2126 * p0.r + 0.7152 * p0.g + 0.0722 * p0.b                
 	
-	for y in img.get_height():
-		for x in img.get_width():
+	for y in range(img.get_height()):
+		for x in range(img.get_width()):
 			var p = img.get_pixel(x, y)
 			var l = 0.2126 * p.r + 0.7152 * p.g + 0.0722 * p.b
 			if l > hl:
