@@ -10,7 +10,7 @@ func _ready():
 	if $CollisionShape:
 		collision_shape = $CollisionShape
 	else:
-		print("CollisionShape node not found!")
+		print("CollisionShape node not found under the player node. Please check the scene setup.")
 
 func _physics_process(delta):
 	var motion = Vector3()
