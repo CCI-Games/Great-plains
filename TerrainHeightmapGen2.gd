@@ -9,13 +9,22 @@ var noise := OpenSimplexNoise.new() # Declare and initialize the noise object
 
 func set_block_map(val):
 	block_map = val
-	generate_terrain()
+	if is_inside_tree():
+		generate_terrain()
 
 func set_view_distance(val):
 	view_distance = val
-	generate_terrain()
+	if is_inside_tree():
+		generate_terrain()
+
+func _ready():
+	if is_inside_tree():
+		generate_terrain()
 
 func generate_terrain():
+	if !is_inside_tree():
+		return
+
 	var centre_offset = floor(view_distance / 2)
 	var player_chunk_x = floor(global_transform.origin.x / chunk_size)
 	var player_chunk_z = floor(global_transform.origin.z / chunk_size)
@@ -64,6 +73,8 @@ func generate_chunk_mesh(chunk_x, chunk_z):
 			indices.append(index + chunk_size + 1)
 
 	var mesh = ArrayMesh.new()
-	mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLE_STRIP, [vertices, indices])
+	if vertices.size() < ArrayMesh.ARRAY_MAX and indices.size() < ArrayMesh.ARRAY_MAX:
+		mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLE_STRIP, [vertices, indices])
+	else:
+		print("Arrays exceed maximum size.")
 	return mesh
-
